@@ -3,7 +3,7 @@
 Table of Contents
 =================
 
-   * [Introduction](#Introduction)
+   * [Introduction](#introduction)
    * [Installation](#installation)
    * [Usage](#usage)
       * [STDIN](#stdin)
