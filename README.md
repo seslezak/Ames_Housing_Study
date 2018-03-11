@@ -1,7 +1,4 @@
 ---
-title: "Ames Housing Data Set Problem Statement"
-author: "Steven Slezak"
-date: "12 March 2018"
 output:
         html_document:
                 toc: true
@@ -9,6 +6,12 @@ output:
                 number_sections: true
                 theme: readable
 ---
+## Ames Housing Data Problem Statement
+### Steven Slezak
+### 12 March 2018
+
+
+
 
 # Introduction
 
@@ -115,7 +118,7 @@ The article in the *Journal of Statistics Education*<sup>1</sup> suggests the fo
 
 4. Package 'AmesHousing'. R Documentation, 2017. [https://cran.r-project.org/web/packages/AmesHousing/AmesHousing.pdf]
 
-# Python Notebook
+# Markdown Notebook
 
-The Python Notebook with ssociated *R* code can be found in the directory attached to this GitHub repository.
+The Markdown Notebook with ssociated *R* code can be found in the directory attached to this GitHub repository.
 
