@@ -4,7 +4,7 @@ Table of Contents
 =================
 
    * [Introduction](#introduction)
-   * [1.  Domain](#1.  Domain)
+   * [1.  Domain](#domain)
    * [Usage](#usage)
       * [STDIN](#stdin)
       * [Local files](#local-files)
