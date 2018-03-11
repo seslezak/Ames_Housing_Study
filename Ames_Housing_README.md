@@ -35,7 +35,7 @@ This problem statement includes the following:
 
 The problem statement and analysis utilize the *Ames* [data set found here.](https://www.openintro.org/stat/data/?data=ames)
 
-# Domain \sum
+# Domain
 
 The *Ames* data set is a collection of features characterizing houses sold in the Ames, Iowa, individual residential housing market between 2006 and 2010.  The data come from the Office of the City Assessor, Ames, Iowa, and were used to compute assessment values for these properties.
 
