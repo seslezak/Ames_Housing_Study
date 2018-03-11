@@ -1,8 +1,5 @@
 <!--ts-->
 <!--te-->
-
-
-
 Table of Contents
 =================
 
@@ -17,19 +14,10 @@ Table of Contents
    * [Tests](#tests)
    * [Dependency](#dependency)
 
----
-output:
-        html_document:
-                toc: true
-                toc_float: true
-                number_sections: true
-                theme: readable
----
-## Ames Housing Data Problem Statement
+
+# Ames Housing Data Problem Statement
 ### Steven Slezak
 ### 12 March 2018
-
-
 
 
 # Introduction
@@ -47,11 +35,11 @@ This problem statement includes the following:
 5.  Benchmark Model:  Simple Linear Regression
 6.  Performance Metrics:  Bias, Maximum Deviation, MAD, MSE
 7.  Citations
-8.  Jupyter Notebook with Associated Code
+8.  Markdown Notebook with Associated Code
 
 The problem statement and analysis utilize the *Ames* [data set found here.](https://www.openintro.org/stat/data/?data=ames)
 
-# Domain
+# 1.  Domain
 
 The *Ames* data set is a collection of features characterizing houses sold in the Ames, Iowa, individual residential housing market between 2006 and 2010.  The data come from the Office of the City Assessor, Ames, Iowa, and were used to compute assessment values for these properties.
 
@@ -59,7 +47,7 @@ The data set was created by Dean De Cock in 2011 for pedagogical purposes in an 
 
 In the original data documentation for the data,<sup>2</sup> De Cock suggests removing certain observations which represent outliers. These can be found by plotting *SalePrice* against *GrLivArea*. This plot reveals five observations for houses larger than 4000 feet<sup>2</sup> of living area above ground. These were removed for this study.
 
-# Problem Statement
+# 2.  Problem Statement
 
 For the purpose of this study, *Ames* data are examined in an Exploratory Data Analysis (EDA).  This involves cleaning and preparing the data for running an EDA.  The EDA itself includes contingency tables, distribution plots, and pairs plots.  Since there are 82 features in the data set, these tables and plots will be limited in number for illustrative purposes.
 
@@ -91,7 +79,7 @@ The intuitive and statistical methods agree on five of the 11 features.  The sta
 
 Finally, a cluster analysis of these features will be rendered.
 
-# Description of Data Set
+# 3.  Description of Data Set
 
 The *Ames* data consist of 82 features and 2930 observations. Features include two identifiers, 46 categorical, 14 discrete (such as year built), and 20 continuous (such as square footage) variables. Variables focus on the quality and quantity of physical attributes of the properties, and include final sales values.  
 
@@ -110,15 +98,15 @@ Dean De Cock suggests in the data documentation<sup>2</sup> that there are two p
 
 The data set occupies 1.5 MB in memory.
 
-# Proposed Solution
+# 4.  Proposed Solution
 
 The data set was created for a class on regression, and the *Journal of Statistics Education* article<sup>1</sup> suggests students build a simple model and a more complicated version. In the simple model, it is suggested at least six variables be used. The more complicated model can use any number of variables.  The literature targets a minimum *R<sup>2</sup>* value of 73%.
 
-# Benchmark Model
+# 5.  Benchmark Model
 
 A linear regression model should be used as the benchmark. It is a simple and common classification which provides a base line to measure more sophisticated models against.
 
-# Performance Metrics
+# 6.  Performance Metrics
 
 The article in the *Journal of Statistics Education*<sup>1</sup> suggests the following metrics be used to evaluate model performance:
 
@@ -127,7 +115,7 @@ The article in the *Journal of Statistics Education*<sup>1</sup> suggests the fo
 3. Mean Absolute Deviation:  *average |Y -- Y<sub>hat</sub>|*
 4. Mean Square Error:  *average (Y -- Y<sub>hat</sub>)<sup>2</sup>*
 
-# Citations
+# 7.  Citations
 
 1. Dean De Cock, Ames, Iowa: Alternative to the Boston Housing Data as an End of Semester Regression Project. Journal of Statistics Education Volume 19, Number 3 (2011) [http://ww2.amstat.org/publications/jse/v19n3/decock.pdf]
 
@@ -137,7 +125,7 @@ The article in the *Journal of Statistics Education*<sup>1</sup> suggests the fo
 
 4. Package 'AmesHousing'. R Documentation, 2017. [https://cran.r-project.org/web/packages/AmesHousing/AmesHousing.pdf]
 
-# Markdown Notebook
+# 8.  Markdown Notebook
 
 The Markdown Notebook with ssociated *R* code can be found in the directory attached to this GitHub repository.
 
