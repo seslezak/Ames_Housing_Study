@@ -102,7 +102,7 @@ A linear regression model should be used as the benchmark. It is a simple and co
 
 The article in the *Journal of Statistics Education*<sup>1</sup> suggests the following metrics be used to evaluate model performance:
 
-1. Bias:  *average (Y<sub>hat</sub> -- Y)*
+1. Bias:  *average $$(Y<sub>hat</sub> -- Y)$$*
 2. Maximium Deviation:  *Max|Y -- Y<sub>hat</sub>|*
 3. Mean Absolute Deviation:  *average |Y -- Y<sub>hat</sub>|*
 4. Mean Square Error:  *average (Y -- Y<sub>hat</sub>)<sup>2</sup>*
