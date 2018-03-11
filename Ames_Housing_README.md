@@ -127,3 +127,5 @@ The article in the *Journal of Statistics Education*<sup>1</sup> suggests the fo
 # Markdown Notebook
 
 The Markdown Notebook with ssociated *R* code can be found in the directory attached to this GitHub repository.
+
+(http://rpubs.com/seslezak/Lahman_HR_Plots)
