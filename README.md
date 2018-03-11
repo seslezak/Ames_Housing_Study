@@ -6,13 +6,12 @@ Table of Contents
    * [Introduction](#introduction)
    * [Domain](#domain)
    * [Problem Statement](#problem-statement)
-      * [STDIN](#stdin)
-      * [Local files](#local-files)
-      * [Remote files](#remote-files)
-      * [Multiple files](#multiple-files)
-      * [Combo](#combo)
-   * [Tests](#tests)
-   * [Dependency](#dependency)
+   * [Description of Data Set](#description-of-data-set)
+   * [Proposed Solution](#proposed-solution)
+   * [Benchmark Model](#benchmark-model)
+   * [Performance Metrics](#performance-metrics)
+   * [Citations](#citations)
+   * [Markdown Notebook](#markdown-notebook)
 
 
 # Ames Housing Data Problem Statement
@@ -79,7 +78,7 @@ The intuitive and statistical methods agree on five of the 11 features.  The sta
 
 Finally, a cluster analysis of these features will be rendered.
 
-# 3.  Description of Data Set
+# Description of Data Set
 
 The *Ames* data consist of 82 features and 2930 observations. Features include two identifiers, 46 categorical, 14 discrete (such as year built), and 20 continuous (such as square footage) variables. Variables focus on the quality and quantity of physical attributes of the properties, and include final sales values.  
 
@@ -98,15 +97,15 @@ Dean De Cock suggests in the data documentation<sup>2</sup> that there are two p
 
 The data set occupies 1.5 MB in memory.
 
-# 4.  Proposed Solution
+# Proposed Solution
 
 The data set was created for a class on regression, and the *Journal of Statistics Education* article<sup>1</sup> suggests students build a simple model and a more complicated version. In the simple model, it is suggested at least six variables be used. The more complicated model can use any number of variables.  The literature targets a minimum *R<sup>2</sup>* value of 73%.
 
-# 5.  Benchmark Model
+# Benchmark Model
 
 A linear regression model should be used as the benchmark. It is a simple and common classification which provides a base line to measure more sophisticated models against.
 
-# 6.  Performance Metrics
+# Performance Metrics
 
 The article in the *Journal of Statistics Education*<sup>1</sup> suggests the following metrics be used to evaluate model performance:
 
@@ -115,7 +114,7 @@ The article in the *Journal of Statistics Education*<sup>1</sup> suggests the fo
 3. Mean Absolute Deviation:  *average |Y -- Y<sub>hat</sub>|*
 4. Mean Square Error:  *average (Y -- Y<sub>hat</sub>)<sup>2</sup>*
 
-# 7.  Citations
+# Citations
 
 1. Dean De Cock, Ames, Iowa: Alternative to the Boston Housing Data as an End of Semester Regression Project. Journal of Statistics Education Volume 19, Number 3 (2011) [http://ww2.amstat.org/publications/jse/v19n3/decock.pdf]
 
@@ -125,7 +124,7 @@ The article in the *Journal of Statistics Education*<sup>1</sup> suggests the fo
 
 4. Package 'AmesHousing'. R Documentation, 2017. [https://cran.r-project.org/web/packages/AmesHousing/AmesHousing.pdf]
 
-# 8.  Markdown Notebook
+# Markdown Notebook
 
 The Markdown Notebook with ssociated *R* code can be found in the directory attached to this GitHub repository.
 
