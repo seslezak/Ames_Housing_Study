@@ -1,4 +1,6 @@
 # Ames Housing Data Problem Statement
+### Steven Slezak
+### 12 March 2018
 <!--ts-->
 <!--te-->
 Table of Contents
@@ -13,12 +15,6 @@ Table of Contents
    * [Performance Metrics](#performance-metrics)
    * [Citations](#citations)
    * [Markdown Notebook](#markdown-notebook)
-
-
-# Ames Housing Data Problem Statement
-### Steven Slezak
-### 12 March 2018
-
 
 # Introduction
 
