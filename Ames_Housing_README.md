@@ -53,23 +53,19 @@ The study uses five methods to identify statistically interesting features.  The
 
 The following table summarizes the different results each method identified:
 
-```{r Table 1, echo = FALSE}
-Table1 <- tibble::tribble(
-        ~"Feature", ~"Regression", ~"Lasso (Gaussian)", ~"Lasso (Poisson)",~"Gradient Boost", ~"Guess",
-        "TotalBsmtSF", 1, 5, 4, 4, "Ranked",
-        "BsmtFinSF1", 3, 4, 6, 10, "NA", 
-        "X2ndFlrSF", 5, "NA", "NA", 3, "NA",
-        "X1stFlrSF", 6, "NA", "NA", 6, "Ranked",
-        "PoolArea", 8, "NA", "NA", "NA", "Ranked",
-        "YearBuilt", 9, 3, 3, 7, "NA",
-        "GrLivArea", "NA", 1, 1, 2, "Ranked",
-        "OverallQual", 10, 2, 2, 1, "NA",
-        "GarageCars_3", "NA", 7, "NA", 3, "NA",
-        "BsmtQual_Ex", "NA", 10, "NA", 5, "NA",
-        "GarageArea", "NA", "NA", 7, 8, "Ranked"
-)
-knitr::kable(Table1, caption = "Prominent Features Identified in *Ames* Data Set")
-```
+|    **Feature   | Regression | Lasso (Gaussian) | Lasso (Poisson) | Gradient Boost |  Guess** |
+|:------------:|:----------:|:----------------:|:---------------:|:--------------:|:------:|
+|  **TotalBsmtSF** |      1     |         5        |        4        |        4       | Ranked |
+|  **BsmtFinSF1**  |      3     |         4        |        6        |       10       |   NA   |
+|   **X2ndFlrSF**  |      5     |        NA        |        NA       |        3       |   NA   |
+|   **X1stFlrSF**  |      6     |        NA        |        NA       |        6       | Ranked |
+|   **PoolArea**   |      8     |        NA        |        NA       |       NA       | Ranked |
+|   **YearBuilt**  |      9     |         3        |        3        |        7       |   NA   |
+|   **GrLivArea**  |     NA     |         1        |        1        |        2       | Ranked |
+|  **OverallQual** |     10     |         2        |        2        |        1       |   NA   |
+| **GarageCars_3** |     NA     |         7        |        NA       |        3       |   NA   |
+|  **BsmtQual_Ex** |     NA     |        10        |        NA       |        5       |   NA   |
+|  **GarageArea**  |     NA     |        NA        |        7        |        8       | Ranked |
 
 The intuitive and statistical methods agree on five of the 11 features.  The statistical methods suggest 11 unique features can be further examined. This will be done with a PCA to narrow down the number of promising features to ten. Appropriate visualization will be provided.
 
