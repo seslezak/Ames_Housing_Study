@@ -1,3 +1,22 @@
+<!--ts-->
+<!--te-->
+
+$ ./gh-md-toc --insert README.test.md
+
+Table of Contents
+=================
+
+   * [gh-md-toc](#gh-md-toc)
+   * [Installation](#installation)
+   * [Usage](#usage)
+      * [STDIN](#stdin)
+      * [Local files](#local-files)
+      * [Remote files](#remote-files)
+      * [Multiple files](#multiple-files)
+      * [Combo](#combo)
+   * [Tests](#tests)
+   * [Dependency](#dependency)
+
 ---
 output:
         html_document:
