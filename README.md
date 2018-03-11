@@ -5,7 +5,7 @@ Table of Contents
 
    * [Introduction](#introduction)
    * [Domain](#domain)
-   * [Usage](#usage)
+   * [Problem Statement](#problem statement)
       * [STDIN](#stdin)
       * [Local files](#local-files)
       * [Remote files](#remote-files)
@@ -47,7 +47,7 @@ The data set was created by Dean De Cock in 2011 for pedagogical purposes in an 
 
 In the original data documentation for the data,<sup>2</sup> De Cock suggests removing certain observations which represent outliers. These can be found by plotting *SalePrice* against *GrLivArea*. This plot reveals five observations for houses larger than 4000 feet<sup>2</sup> of living area above ground. These were removed for this study.
 
-# 2.  Problem Statement
+# Problem Statement
 
 For the purpose of this study, *Ames* data are examined in an Exploratory Data Analysis (EDA).  This involves cleaning and preparing the data for running an EDA.  The EDA itself includes contingency tables, distribution plots, and pairs plots.  Since there are 82 features in the data set, these tables and plots will be limited in number for illustrative purposes.
 
