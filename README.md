@@ -1,7 +1,7 @@
 <!--ts-->
 <!--te-->
 
-$ ./gh-md-toc --insert README.test.md
+
 
 Table of Contents
 =================
