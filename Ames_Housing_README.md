@@ -128,3 +128,25 @@ The article in the *Journal of Statistics Education*<sup>1</sup> suggests the fo
 
 The Markdown Notebook with ssociated *R* code can be found in the directory attached to this GitHub repository.
 
+---
+title: "Iris Test"
+author: "Steven Slezak"
+date: "March 11, 2018"
+output: html_document
+---
+Part 1
+```{r}
+data(iris)
+```
+
+Part 2
+```{r}
+str(iris)
+```
+
+Part 3
+```{r}
+plot(iris)
+```
+
+Done!
