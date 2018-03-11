@@ -53,7 +53,7 @@ The study uses five methods to identify statistically interesting features.  The
 
 The following table summarizes the different results each method identified:
 
-|    **Feature   | Regression | Lasso (Gaussian) | Lasso (Poisson) | Gradient Boost |  Guess** |
+|    **Feature**   | **Regression** | **Lasso (Gaussian)** | **Lasso (Poisson)** | **Gradient Boost** |  **Guess** |
 |:------------:|:----------:|:----------------:|:---------------:|:--------------:|:------:|
 |  **TotalBsmtSF** |      1     |         5        |        4        |        4       | Ranked |
 |  **BsmtFinSF1**  |      3     |         4        |        6        |       10       |   NA   |
