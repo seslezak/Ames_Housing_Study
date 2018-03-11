@@ -3,7 +3,7 @@
 Table of Contents
 =================
 
-   * [gh-md-toc](#gh-md-toc)
+   * [Introduction](#Introduction)
    * [Installation](#installation)
    * [Usage](#usage)
       * [STDIN](#stdin)
