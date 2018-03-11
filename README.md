@@ -5,7 +5,7 @@ Table of Contents
 
    * [Introduction](#introduction)
    * [Domain](#domain)
-   * [Problem Statement](#problem statement)
+   * [Problem Statement](#problem-statement)
       * [STDIN](#stdin)
       * [Local files](#local-files)
       * [Remote files](#remote-files)
