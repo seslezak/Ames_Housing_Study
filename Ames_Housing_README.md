@@ -123,4 +123,4 @@ The article in the *Journal of Statistics Education*<sup>1</sup> suggests the fo
 
 # Markdown Notebook
 
-An annotated Markdown Notebook with associated *R* code and graphics can be found in the directory attached to this GitHub repository.
+An annotated Markdown Notebook with associated *R* code and graphics can be [found in the directory attached to this GitHub repository.](https://seslezak.github.io/Ames_Housing_Study/)
