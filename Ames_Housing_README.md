@@ -117,7 +117,7 @@ The article in the *Journal of Statistics Education*<sup>1</sup> suggests the fo
 
 4. Package 'AmesHousing'. R Documentation, 2017. [https://cran.r-project.org/web/packages/AmesHousing/AmesHousing.pdf]
 
-5. Chris Albon (@chrisalbon) [https://twitter.com/chrisalbon]
+5. Chris Albon [@chrisalbon](https://twitter.com/chrisalbon)
 
 6. "Understanding PCA using Shiny and Stack Overflow data". Julia Silge. Presentation to rstudio::conf2018. [https://www.rstudio.com/resources/videos/understanding-pca-using-shiny-and-stack-overflow-data/]
 
