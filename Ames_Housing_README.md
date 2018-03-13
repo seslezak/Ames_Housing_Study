@@ -121,6 +121,8 @@ The article in the *Journal of Statistics Education*<sup>1</sup> suggests the fo
 
 6. "Understanding PCA using Shiny and Stack Overflow data". Julia Silge. Presentation to rstudio::conf2018. [https://www.rstudio.com/resources/videos/understanding-pca-using-shiny-and-stack-overflow-data/]
 
+7. An Introduction to Statistical Learning: with Applications in R. Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani. Springer; 1st ed. 2013, Corr. 7th printing 2017 edition (September 1, 2017)
+
 # Markdown Notebook
 
-An annotated Markdown Notebook with associated *R* code and graphics can be [found in the directory attached to this GitHub repository.](https://seslezak.github.io/Ames_Housing_Study/)
+An annotated Markdown Notebook with associated *R* code and graphics can be [found in the directory attached to this GitHub repository.](https://seslezak.github.io/Ames_Housing_Study/). The full *R* code can be [found on Githum]().
