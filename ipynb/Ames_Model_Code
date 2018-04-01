@@ -1,0 +1,637 @@
+#Part 1
+
+library(tidyverse)
+library(ggplot2)
+library(rapportools)
+library(ragtop)
+library(corrplot)
+library(usdm)
+library(fastDummies)
+library(broom)
+library(car)
+library(leaps)
+library(glmnet)
+library(pls)
+library(tree)
+library(randomForest)
+library(gbm)
+library(e1071)
+library(Matrix)
+
+AmesTrURL <- 'https://raw.githubusercontent.com/seslezak/Ames_Housing_Models/master/data/train.csv'
+AmesTr <- read.csv(url(AmesTrURL), sep = ",", header = TRUE, stringsAsFactors = FALSE,
+                   na.strings = c('', 'NA'))
+AmesTstURL <- 'https://raw.githubusercontent.com/seslezak/Ames_Housing_Models/master/data/test.csv'
+AmesTst <- read.csv(url(AmesTstURL), sep = ",", header = TRUE, stringsAsFactors = FALSE,
+                    na.strings = c('', 'NA'))
+
+SalePrice <- AmesTr[, c('SalePrice')]
+SalePrice <- SalePrice[-1460]
+AmesTr <- AmesTr[-1460, ]
+AmesTr <- rbind(AmesTr[, -81], AmesTst)
+head(AmesTr)
+dim(AmesTr)
+str(AmesTr)
+str(Filter(is.numeric, AmesTr))
+AmesTr$Id <- NULL
+AmesTst$Id <- NULL
+dim(AmesTr)
+pryr::object_size(AmesTr)
+anyDuplicated(AmesTr)
+summary(AmesTr)
+str(AmesTr)
+
+AmesTr$MSSubClass <- as.factor(AmesTr$MSSubClass)
+AmesTr$OverallQual <- as.factor(AmesTr$OverallQual)
+AmesTr$OverallCond <- as.factor(AmesTr$OverallCond)
+AmesTr$BsmtFullBath <- as.factor(AmesTr$BsmtFullBath)
+AmesTr$BsmtHalfBath <- as.factor(AmesTr$BsmtHalfBath)
+AmesTr$FullBath <- as.factor(AmesTr$FullBath)
+AmesTr$HalfBath <- as.factor(AmesTr$HalfBath)
+AmesTr$BedroomAbvGr <- as.factor(AmesTr$BedroomAbvGr)
+AmesTr$KitchenAbvGr <- as.factor(AmesTr$KitchenAbvGr)
+AmesTr$TotRmsAbvGrd <- as.factor(AmesTr$TotRmsAbvGrd)
+AmesTr$Fireplaces <- as.factor(AmesTr$Fireplaces)
+AmesTr$GarageCars <- as.factor(AmesTr$GarageCars)
+AmesTr$MoSold <- as.factor(AmesTr$MoSold)
+
+sum(is.na(AmesTr))
+sum(is.empty(AmesTr))
+nan_sums <- colSums(is.na(AmesTr))
+nan_sums[nan_sums > 0]
+match(c('Alley', 'PoolArea', 'PoolQC', 'Fence', 'MiscFeature'), names(AmesTr))
+
+AmesTr <- AmesTr[, -c(6, 71:74)]
+dim(AmesTr)
+
+medianLotFrontage <- median(AmesTr$LotFrontage, na.rm = TRUE)
+medianMasVnrArea <- median(AmesTr$MasVnrArea, na.rm = TRUE)
+medianBsmtFinSF1 <- median(AmesTr$BsmtFinSF1, na.rm = TRUE)
+medianBsmtFinSF2 <- median(AmesTr$BsmtFinSF2, na.rm = TRUE)
+medianBsmtUnfSF <- median(AmesTr$BsmtUnfSF, na.rm = TRUE)
+medianTotalBsmtSF <- median(AmesTr$TotalBsmtSF, na.rm = TRUE)
+medianGarageYrBlt <- median(AmesTr$GarageYrBlt, na.rm = TRUE)
+medianGarageArea <- median(AmesTr$GarageArea, na.rm = TRUE)
+
+AmesTr$LotFrontage[is.na(AmesTr$LotFrontage)] <- medianLotFrontage
+AmesTr$MasVnrArea[is.na(AmesTr$MasVnrArea)] <- medianMasVnrArea
+AmesTr$BsmtFinSF1[is.na(AmesTr$BsmtFinSF1)] <- medianBsmtFinSF1
+AmesTr$BsmtFinSF2[is.na(AmesTr$BsmtFinSF2)] <- medianBsmtFinSF2
+AmesTr$BsmtUnfSF[is.na(AmesTr$BsmtUnfSF)] <- medianBsmtUnfSF
+AmesTr$TotalBsmtSF[is.na(AmesTr$TotalBsmtSF)] <- medianTotalBsmtSF
+AmesTr$GarageYrBlt[is.na(AmesTr$GarageYrBlt)] <- medianGarageYrBlt
+AmesTr$GarageArea[is.na(AmesTr$GarageArea)] <- medianGarageArea
+nan_sums <- colSums(is.na(AmesTr))
+nan_sums[nan_sums > 0]
+sum(is.empty(AmesTr))
+
+AmesTr$BsmtFullBath <- as.character(AmesTr$BsmtFullBath)
+AmesTr$BsmtHalfBath <- as.character(AmesTr$BsmtHalfBath)
+AmesTr$GarageCars <- as.character(AmesTr$GarageCars)
+
+AmesTr$BsmtQual[is.na(AmesTr$BsmtQual)] <- 'w/o'
+AmesTr$BsmtCond[is.na(AmesTr$BsmtCond)] <- 'w/o'
+AmesTr$BsmtExposure[is.na(AmesTr$BsmtExposure)] <- 'w/o'
+AmesTr$BsmtFinType1[is.na(AmesTr$BsmtFinType1)] <- 'w/o'
+AmesTr$BsmtFinType2[is.na(AmesTr$BsmtFinType2)] <- 'w/o'
+AmesTr$BsmtFullBath[is.na(AmesTr$BsmtFullBath)] <- 'w/o'
+AmesTr$BsmtHalfBath[is.na(AmesTr$BsmtHalfBath)] <- 'w/o'
+AmesTr$FireplaceQu[is.na(AmesTr$FireplaceQu)] <- 'w/o'
+AmesTr$GarageType[is.na(AmesTr$GarageType)] <- 'w/o'
+AmesTr$GarageFinish[is.na(AmesTr$GarageFinish)] <- 'w/o'
+AmesTr$GarageCars[is.na(AmesTr$GarageCars)] <- 'w/o'
+AmesTr$GarageQual[is.na(AmesTr$GarageQual)] <- 'w/o'
+AmesTr$GarageCond[is.na(AmesTr$GarageCond)] <- 'w/o'
+
+AmesTr <- as.data.frame(unclass(AmesTr))
+str(AmesTr)
+sum(is.empty(AmesTr))
+nan_sums[nan_sums > 0]
+
+AmesTr$MasVnrType[is.na(AmesTr$MasVnrType)] <- 'None'
+AmesTr$Electrical[is.na(AmesTr$Electrical)] <- 'SBrkr'
+AmesTr$MSZoning[is.na(AmesTr$MSZoning)] <- 'RL'
+AmesTr$Utilities[is.na(AmesTr$Utilities)] <- 'AllPub'
+AmesTr$Exterior1st[is.na(AmesTr$Exterior1st)] <- 'VinylSd'
+AmesTr$Exterior2nd[is.na(AmesTr$Exterior2nd)] <- 'VinylSd'
+AmesTr$KitchenQual[is.na(AmesTr$KitchenQual)] <- 'TA'
+AmesTr$Functional[is.na(AmesTr$Functional)] <- 'Typ'
+AmesTr$SaleType[is.na(AmesTr$SaleType)] <- 'WD'
+
+nan_sums <- colSums(is.na(AmesTr))
+nan_sums[nan_sums > 0]
+sum(is.empty(AmesTr$Electrical))
+sum(is.empty(AmesTr$MasVnrType))
+sum(is.empty(AmesTr))
+str(Filter(is.numeric, AmesTr))
+
+CorTable <- cor(Filter(is.numeric, AmesTr))
+corrplot::corrplot(CorTable, type = 'lower')
+numerics <- Filter(is.numeric, AmesTr)
+usdm::vif(numerics)
+
+AmesTrTib <- as_tibble(AmesTr)
+AmesTrTib
+AmesTrDummy <- dummy_cols(AmesTrTib, remove_first_dummy = TRUE)
+str(AmesTrDummy)
+
+names(Filter(is.factor, AmesTrDummy))
+dropCols <- c("MSSubClass", "MSZoning", "Street", "LotShape", "LandContour", 
+              "Utilities", "LotConfig", "LandSlope", "Neighborhood", "Condition1", 
+              "Condition2", "BldgType", "HouseStyle", "OverallQual", "OverallCond",
+              "RoofStyle", "RoofMatl", "Exterior1st", "Exterior2nd", "MasVnrType",
+              "ExterQual", "ExterCond", "Foundation", "BsmtQual", "BsmtCond",
+              "BsmtExposure", "BsmtFinType1", "BsmtFinType2", "Heating", "HeatingQC",
+              "CentralAir", "Electrical", "BsmtFullBath", "BsmtHalfBath", "FullBath",
+              "HalfBath", "BedroomAbvGr", "KitchenAbvGr", "KitchenQual", "TotRmsAbvGrd",
+              "Functional", "Fireplaces", "FireplaceQu", "GarageType", "GarageFinish",
+              "GarageCars", "GarageQual", "GarageCond", "PavedDrive","MoSold", 
+              "SaleType", "SaleCondition")
+AmesTrDummy <- AmesTrDummy %>% dplyr::select(-one_of(dropCols))
+
+dim(AmesTrDummy)
+nan_sums <- colSums(is.na(AmesTrDummy))
+nan_sums[nan_sums > 0]
+sum(is.empty(AmesTrDummy))
+
+AmesTrDummy <- scale(AmesTrDummy, center = TRUE, scale = TRUE)
+AmesTrDumScaleDF <- as.tibble(AmesTrDummy)
+
+AmesTrain <- AmesTrDumScaleDF[1:1459, ]
+AmesTrain <- cbind(AmesTrain, SalePrice)
+AmesTest <- AmesTrDumScaleDF[1460:2918, ]
+id <- 1461:2919
+
+lmRating <- lm(SalePrice ~ . , AmesTrain)
+lmCoefs <- tidy(lmRating)
+lmCoefs$abs_est <- sqrt(lmCoefs$estimate^2)
+lmCoefsAbs <- lmCoefs[-c(2:5)]
+lmCoefsAbs <- lmCoefsAbs[-1,]
+head(lmCoefsAbs[order(-lmCoefsAbs$abs_est), ], 25)
+
+AA <- AmesTrain
+plot(AA$X2ndFlrSF, AA$SalePrice)
+plot(AA$X1stFlrSF, AA$SalePrice)
+plot(AA$BsmtFinSF1, AA$SalePrice)
+plot(AA$YearBuilt, AA$SalePrice)
+plot(AA$BsmtUnfSF, AA$SalePrice)
+plot(AA$LotArea, AA$SalePrice)
+plot(AA$BsmtFinSF2, AA$SalePrice)
+
+match(c('GrLivArea', 'TotalBsmtSF', 'RoofMatl_ClyTile',
+        'YearBuilt', 'Condition2_PosN', 'OverallQual_10', 'SaleType_New',
+        'Neighborhood_StoneBr', 'LotArea', 'Neighborhood_NridgHt',
+        'GarageArea', 'HouseStyle_1Story', 'Neighborhood_Crawfor', 'KitchenQual_Ex', 
+        'Neighborhood_NoRidge', 'Fireplaces_2'), names(AmesTrain))
+match(c('GrLivArea', 'TotalBsmtSF', 'RoofMatl_ClyTile',
+        'YearBuilt', 'Condition2_PosN', 'OverallQual_10', 'SaleType_New',
+        'Neighborhood_StoneBr', 'LotArea', 'Neighborhood_NridgHt',
+        'GarageArea', 'HouseStyle_1Story', 'Neighborhood_Crawfor', 'KitchenQual_Ex', 
+        'Neighborhood_NoRidge', 'Fireplaces_2'), names(AmesTest))
+AmesTrainShort <- AmesTrain[, c(13, 9, 134, 3, 91, 111, 309, 73, 2, 65, 15, 99,
+                                57, 241, 58, 263)]
+AmesTestShort <- AmesTest[, c(13, 9, 134, 3, 91, 111, 309, 73, 2, 65, 15, 99,
+                              57, 241, 58, 263)]
+
+lm.train <- cbind(AmesTrainShort, SalePrice)
+lm.test <-  AmesTestShort
+lm.fit16 <- lm(SalePrice ~. , data = lm.train)
+summary(lm.fit16)
+vif(lm.fit16)
+
+lm.fit15 <- lm(SalePrice ~. -HouseStyle_1Story, data = lm.train)
+summary(lm.fit15)
+vif(lm.fit15)
+
+lm.pred <- predict.lm(lm.fit15, newdata = lm.test, scale = NULL)
+mean((lm.pred - lm.test)^2)
+lm.RMSE <- sqrt(mean((lm.pred - lm.test)^2))
+lm.RMSE
+
+lm.fit.interactive <- lm(formula = SalePrice ~ GrLivArea + TotalBsmtSF + YearBuilt * 
+                                 Neighborhood_NridgHt + 
+                                 SaleType_New * Neighborhood_StoneBr * LotArea, 
+                                 data = AmesTrainShort)
+summary(lm.fit.interactive)
+
+lmi.pred <- predict.lm(lm.fit.interactive, newdata = lm.test, scale = NULL)
+mean((lmi.pred - lm.test)^2)
+lmi.RMSE <- sqrt(mean((lm.pred - lm.test)^2))
+lmi.RMSE
+
+regfit.full <- regsubsets(SalePrice ~ ., data = AmesTrainShort, nvmax = 16)
+reg.summary <- summary(regfit.full)
+reg.summary
+reg.summary$adjr2
+
+par(mfrow = c(2, 2))
+plot(reg.summary$rss, xlab = 'Number of Variables', ylab = 'RSS', type = 'b')
+which.min(reg.summary$rss)
+points(16, reg.summary$rss[16], col = 'red', cex = 2, pch = 20)
+plot(reg.summary$adjr2, xlab = 'Number of Variables', ylab = 'Adj R2', type = 'b')
+which.max(reg.summary$adjr2)
+points(15, reg.summary$adjr2[15], col = 'red', cex = 2, pch = 20)
+plot(reg.summary$cp, xlab = 'Number of Variables', ylab = 'Cp', type = 'b')
+which.min(reg.summary$cp)
+points(15, reg.summary$cp[15], col = 'red', cex = 2, pch = 20)
+plot(reg.summary$bic, xlab = 'Number of Variables', ylab = 'BIC', type = 'b')
+which.min(reg.summary$bic)
+points(15, reg.summary$bic[15], col = 'red', cex = 2, pch = 20)
+
+plot(regfit.full, scale = 'r2')
+plot(regfit.full, scale = 'adjr2')
+plot(regfit.full, scale = 'Cp')
+plot(regfit.full, scale = 'bic')
+coef(regfit.full, 7)
+
+regfit.fwd <- regsubsets(SalePrice ~ ., data = AmesTrainShort, nvmax = 16, 
+                         method = 'forward')
+summary(regfit.fwd)
+
+regfit.bwd <- regsubsets(SalePrice ~ ., data = AmesTrainShort, nvmax = 16, 
+                         method = 'backward')
+summary(regfit.bwd)
+
+#Part 2
+
+library(tidyverse)
+library(ggplot2)
+library(rapportools)
+library(ragtop)
+library(corrplot)
+library(usdm)
+library(fastDummies)
+library(broom)
+library(car)
+library(leaps)
+library(glmnet)
+library(pls)
+library(tree)
+library(randomForest)
+library(gbm)
+library(e1071)
+
+AmesTr <- read.csv('C:/Users/Steven/Desktop/R Projects/UCLA DSI/Test 3/train.csv',
+                   stringsAsFactors = FALSE, na.strings = c('', "NA"))
+AmesTst <- read.csv('C:/Users/Steven/Desktop/R Projects/UCLA DSI/Test 3/test.csv',
+                    stringsAsFactors = FALSE, na.strings = c('', "NA"))
+
+head(AmesTr)
+head(AmesTst)
+dim(AmesTr)
+dim(AmesTst)
+str(AmesTr)
+str(AmesTst)
+str(Filter(is.numeric, AmesTr))
+AmesTr$Id <- NULL
+sorted <- AmesTr[order(AmesTr$GrLivArea, decreasing = TRUE), ]
+head(sorted)
+dim(AmesTr)
+AmesTr <- AmesTr[-c(1299, 524, 1183, 692), ]
+AmesTst <- AmesTst[-c(1299, 524, 1183), ]
+dim(AmesTr)
+dim(AmesTst)
+pryr::object_size(AmesTr)
+anyDuplicated(AmesTr)
+summary(AmesTr)
+str(AmesTr)
+
+AmesTr$MSSubClass <- as.factor(AmesTr$MSSubClass)
+AmesTr$OverallQual <- as.factor(AmesTr$OverallQual)
+AmesTr$OverallCond <- as.factor(AmesTr$OverallCond)
+AmesTr$BsmtFullBath <- as.factor(AmesTr$BsmtFullBath)
+AmesTr$BsmtHalfBath <- as.factor(AmesTr$BsmtHalfBath)
+AmesTr$FullBath <- as.factor(AmesTr$FullBath)
+AmesTr$HalfBath <- as.factor(AmesTr$HalfBath)
+AmesTr$BedroomAbvGr <- as.factor(AmesTr$BedroomAbvGr)
+AmesTr$KitchenAbvGr <- as.factor(AmesTr$KitchenAbvGr)
+AmesTr$TotRmsAbvGrd <- as.factor(AmesTr$TotRmsAbvGrd)
+AmesTr$Fireplaces <- as.factor(AmesTr$Fireplaces)
+AmesTr$GarageCars <- as.factor(AmesTr$GarageCars)
+AmesTr$MoSold <- as.factor(AmesTr$MoSold)
+
+sum(is.na(AmesTr))
+sum(is.empty(AmesTr))
+nan_sums <- colSums(is.na(AmesTr))
+nan_sums[nan_sums > 0]
+match(c('Alley', 'PoolArea', 'PoolQC', 'Fence', 'MiscFeature'), names(AmesTr))
+
+AmesTr <- AmesTr[, -c(6, 71:74)]
+dim(AmesTr)
+
+medianLotFrontage <- median(AmesTr$LotFrontage, na.rm = TRUE)
+medianMasVnrArea <- median(AmesTr$MasVnrArea, na.rm = TRUE)
+medianBsmtFinSF1 <- median(AmesTr$BsmtFinSF1, na.rm = TRUE)
+medianBsmtFinSF2 <- median(AmesTr$BsmtFinSF2, na.rm = TRUE)
+medianBsmtUnfSF <- median(AmesTr$BsmtUnfSF, na.rm = TRUE)
+medianTotalBsmtSF <- median(AmesTr$TotalBsmtSF, na.rm = TRUE)
+medianGarageYrBlt <- median(AmesTr$GarageYrBlt, na.rm = TRUE)
+medianGarageArea <- median(AmesTr$GarageArea, na.rm = TRUE)
+
+AmesTr$LotFrontage[is.na(AmesTr$LotFrontage)] <- medianLotFrontage
+AmesTr$MasVnrArea[is.na(AmesTr$MasVnrArea)] <- medianMasVnrArea
+AmesTr$BsmtFinSF1[is.na(AmesTr$BsmtFinSF1)] <- medianBsmtFinSF1
+AmesTr$BsmtFinSF2[is.na(AmesTr$BsmtFinSF2)] <- medianBsmtFinSF2
+AmesTr$BsmtUnfSF[is.na(AmesTr$BsmtUnfSF)] <- medianBsmtUnfSF
+AmesTr$TotalBsmtSF[is.na(AmesTr$TotalBsmtSF)] <- medianTotalBsmtSF
+AmesTr$GarageYrBlt[is.na(AmesTr$GarageYrBlt)] <- medianGarageYrBlt
+AmesTr$GarageArea[is.na(AmesTr$GarageArea)] <- medianGarageArea
+nan_sums <- colSums(is.na(AmesTr))
+nan_sums[nan_sums > 0]
+sum(is.empty(AmesTr))
+
+AmesTr$BsmtFullBath <- as.character(AmesTr$BsmtFullBath)
+AmesTr$BsmtHalfBath <- as.character(AmesTr$BsmtHalfBath)
+AmesTr$GarageCars <- as.character(AmesTr$GarageCars)
+
+AmesTr$BsmtQual[is.na(AmesTr$BsmtQual)] <- 'w/o'
+AmesTr$BsmtCond[is.na(AmesTr$BsmtCond)] <- 'w/o'
+AmesTr$BsmtExposure[is.na(AmesTr$BsmtExposure)] <- 'w/o'
+AmesTr$BsmtFinType1[is.na(AmesTr$BsmtFinType1)] <- 'w/o'
+AmesTr$BsmtFinType2[is.na(AmesTr$BsmtFinType2)] <- 'w/o'
+AmesTr$BsmtFullBath[is.na(AmesTr$BsmtFullBath)] <- 'w/o'
+AmesTr$BsmtHalfBath[is.na(AmesTr$BsmtHalfBath)] <- 'w/o'
+AmesTr$FireplaceQu[is.na(AmesTr$FireplaceQu)] <- 'w/o'
+AmesTr$GarageType[is.na(AmesTr$GarageType)] <- 'w/o'
+AmesTr$GarageFinish[is.na(AmesTr$GarageFinish)] <- 'w/o'
+AmesTr$GarageCars[is.na(AmesTr$GarageCars)] <- 'w/o'
+AmesTr$GarageQual[is.na(AmesTr$GarageQual)] <- 'w/o'
+AmesTr$GarageCond[is.na(AmesTr$GarageCond)] <- 'w/o'
+
+AmesTr <- as.data.frame(unclass(AmesTr))
+str(AmesTr)
+sum(is.empty(AmesTr))
+nan_sums[nan_sums > 0]
+
+nan_sums <- colSums(is.na(AmesTr))
+nan_sums[nan_sums > 0]
+sum(is.empty(AmesTr$Electrical))
+sum(is.empty(AmesTr$MasVnrType))
+sum(is.empty(AmesTr))
+str(Filter(is.numeric, AmesTr))
+
+CorTable <- cor(Filter(is.numeric, AmesTr))
+corrplot::corrplot(CorTable, type = 'lower')
+numerics <- Filter(is.numeric, AmesTr)
+usdm::vif(numerics)
+
+AmesTrTib <- as_tibble(AmesTr)
+AmesTrTib
+
+AmesTrDummy <- dummy_cols(AmesTrTib, remove_first_dummy = TRUE)
+str(AmesTrDummy)
+match(c('SalePrice'), names(AmesTrDummy))
+AmesTrDumNoTg <- AmesTrDummy[, -75]
+AmesTrTarget <- AmesTrDummy[, 75]
+names(Filter(is.factor, AmesTrDumNoTg))
+dropCols <- c("MSSubClass", "MSZoning", "Street", "LotShape", "LandContour", 
+              "Utilities", "LotConfig", "LandSlope", "Neighborhood", "Condition1", 
+              "Condition2", "BldgType", "HouseStyle", "OverallQual", "OverallCond",
+              "RoofStyle", "RoofMatl", "Exterior1st", "Exterior2nd", "MasVnrType",
+              "ExterQual", "ExterCond", "Foundation", "BsmtQual", "BsmtCond",
+              "BsmtExposure", "BsmtFinType1", "BsmtFinType2", "Heating", "HeatingQC",
+              "CentralAir", "Electrical", "BsmtFullBath", "BsmtHalfBath", "FullBath",
+              "HalfBath", "BedroomAbvGr", "KitchenAbvGr", "KitchenQual", "TotRmsAbvGrd",
+              "Functional", "Fireplaces", "FireplaceQu", "GarageType", "GarageFinish",
+              "GarageCars", "GarageQual", "GarageCond", "PavedDrive","MoSold", 
+              "SaleType", "SaleCondition")
+AmesTrDumNoTg <- AmesTrDumNoTg %>% dplyr::select(-one_of(dropCols))
+AmesTrDumwTg <- cbind(AmesTrTarget, AmesTrDumNoTg)
+dim(AmesTrDumNoTg)
+dim(AmesTrDumwTg)
+nan_sums <- colSums(is.na(AmesTrDumNoTg))
+nan_sums[nan_sums > 0]
+sum(is.empty(AmesTrDumNoTg))
+
+AmesTrDumScale <- scale(AmesTrDumNoTg, center = TRUE, scale = TRUE)
+AmesTrDumScaleDF <- as.tibble(AmesTrDumScale)
+AmesTrDumScaleDF <- cbind(AmesTrTarget, AmesTrDumScaleDF)
+
+match(c('SalePrice', 'GrLivArea', 'TotalBsmtSF', 'RoofMatl_ClyTile',
+        'YearBuilt', 'Condition2_PosN', 'OverallQual_10', 'SaleType_New',
+        'Neighborhood_StoneBr', 'LotArea', 'Neighborhood_NridgHt',
+        'GarageArea', 'HouseStyle_1Story', 'Neighborhood_Crawfor', 'KitchenQual_Ex', 
+        'Neighborhood_NoRidge', 'Fireplaces_2'), names(AmesTrDumScaleDF))
+AmesTrDumScaleDFShort <- AmesTrDumScaleDF[, c(1, 14, 10, 4, 92, 111, 302, 73, 3, 65,
+                                              16, 99, 57, 239, 58, 259)]
+
+AmesTrDumScaleDFShort$id <- 1:nrow(AmesTrDumScaleDFShort)
+lm.train <- AmesTrDumScaleDFShort %>% sample_frac(0.5)
+lm.test <- anti_join(AmesTrDumScaleDFShort, lm.train, by = 'id')
+
+predict.regsubsets <- function(object, newdata, id, ...) {
+        form = as.formula(object$call [[2]])
+        mat = model.matrix(form, newdata)
+        coefi = coef(object, id = id)
+        xvars = names(coefi)
+        mat[, xvars] %*% coefi
+}
+
+k = 15
+set.seed(805)
+folds <- sample(1:k, nrow(AmesTrDumScaleDFShort), replace = TRUE)
+cv.errors <- matrix(NA, k, 15, dimnames = list(NULL, paste(1:15)))
+for (j in 1:k) {
+        best.fit = regsubsets(SalePrice ~ ., data = AmesTrDumScaleDFShort[folds != j, ],
+                              nvmax = 16)
+        for (i in 1:15) {
+                pred = predict.regsubsets(best.fit, AmesTrDumScaleDFShort[folds == j, ], id = i)
+                cv.errors[j, i] =  mean((AmesTrDumScaleDFShort$SalePrice[folds == j] - pred)^2)
+        }
+}
+
+mean.cv.errors <- apply(cv.errors, 2, mean)
+mean.cv.errors
+plot(mean.cv.errors, type = 'b')
+regbest <- regsubsets(SalePrice ~ ., data = AmesTrDumScaleDFShort, nvmax = 18)
+coef(regbest, 15)
+
+xx <- model.matrix(SalePrice ~ ., data = AmesTrDumScaleDFShort)[, -1]
+yy <- AmesTrDumScaleDFShort$SalePrice
+grid <- 10^seq(10, -2, length = 100)
+ridge.mod <- glmnet(xx, yy, alpha = 0, lambda = grid, standardize = FALSE)
+ridge.mod
+dim(coef(ridge.mod))
+ridge.mod$lambda[32]
+coef(ridge.mod)[, 32]
+
+sqrt(sum(coef(ridge.mod)[-1, 32]^2))
+
+ridge.mod$lambda[60]
+coef(ridge.mod)[, 60]
+sqrt(sum(coef(ridge.mod)[-1, 60]^2))
+predict(ridge.mod, s = 50, type = 'coefficients')[1:16, ]
+
+set.seed(805)
+train <-  sample(1:nrow(xx), nrow(xx) / 2)
+test <-  (-train)
+yy.test <-  yy[test]
+ridge.mod <- glmnet(xx[train, ], yy[train], alpha = 0, lambda = grid, thresh = 1e-12)
+ridge.pred <- predict(ridge.mod, s = 4, newx = xx[test, ])
+mean((ridge.pred - yy.test)^2)
+ridge.RMSE <- sqrt(mean((ridge.pred - yy.test)^2))
+ridge.RMSE
+
+set.seed(805)
+cv.out <- cv.glmnet(xx[train, ], yy[train], alpha = 0)
+plot(cv.out)
+bestlam <- cv.out$lambda.min
+bestlam
+ridge.pred <- predict(ridge.mod, s = bestlam, newx = xx[test, ])
+mean((ridge.pred - yy.test)^2)
+bestRidge.RMSE <- sqrt(mean((ridge.pred - yy.test)^2))
+bestRidge.RMSE
+out <- glmnet(xx, yy, alpha = 0)
+predict(out, type = 'coefficients', s = bestlam)[1:15, ]
+
+lasso.mod <- glmnet(xx[train, ], yy[train], alpha = 1, lambda = grid)
+plot(lasso.mod)
+set.seed(805)
+cv.out <- cv.glmnet(xx[train, ], yy[train], alpha = 1)
+
+bestlam <- cv.out$lambda.min
+bestlam
+lasso.pred <- predict(lasso.mod, s = bestlam, newx = xx[test, ])
+mean((lasso.pred - yy.test)^2)
+lasso.RMSE <- sqrt(mean((lasso.pred - yy.test)^2))
+lasso.RMSE
+
+out <-  glmnet(xx, yy, alpha = 1, lambda = grid)
+lasso.coef <-  predict(out, type = 'coefficients', s = bestlam)[1:15, ]
+lasso.coef
+
+set.seed(805)
+pcr.fit <- pcr(SalePrice ~ ., data = AmesTrDumScaleDFShort, subset = train,
+               validation = 'CV')
+summary(pcr.fit)
+validationplot(pcr.fit, val.type = 'MSEP')
+
+pcr.pred <- predict(pcr.fit, xx[test, ], ncomp = 16)
+pcr.pred
+mm <- mean((pcr.pred - yy.test)^2)
+pcr.RMSE <- sqrt(mm)
+pcr.RMSE
+pcr.fit <- pcr(yy ~ xx, ncomp = 16)
+summary(pcr.fit)
+
+DTAmes <- AmesTrDumScaleDFShort
+median(DTAmes$SalePrice)
+High <- ifelse(DTAmes$SalePrice < 162999, 'No', 'Yes')
+DTAmes <- data.frame(DTAmes, High)
+tree.DTAmes <- tree::tree(High ~ . -SalePrice, DTAmes)
+summary(tree.DTAmes)
+plot(tree.DTAmes)
+text(tree.DTAmes, pretty = 0)
+
+tree.DTAmes
+set.seed(805)
+train <- sample(1:nrow(DTAmes), 728)
+Ames.test <- DTAmes[-train,]
+High.test <- High[-train]
+tree.Ames <- tree(High ~. -SalePrice, DTAmes, subset = train)
+tree.pred <- predict(tree.Ames, Ames.test, type = 'class')
+table(tree.pred, High.test)
+(321 + 324) / 728
+
+set.seed(805)
+cv.Ames <- cv.tree(tree.Ames, FUN = prune.misclass)
+names(cv.Ames)
+cv.Ames
+
+par(mfrow = c(1, 2))
+plot(cv.Ames$size, cv.Ames$dev, type = 'b')
+plot(cv.Ames$k, cv.Ames$dev, type = 'b')
+
+prune.Ames <- prune.misclass(tree.Ames, best = 7)
+plot(prune.Ames)
+text(prune.Ames, pretty = 0)
+tree.pred <- predict(prune.Ames, Ames.test, type = 'class')
+table(tree.pred, High.test)
+(322 + 322) / 728
+
+DTRAmes <- DTAmes[, -c(17, 18)]
+set.seed(805)
+train <- sample(1:nrow(DTRAmes), nrow(DTRAmes) / 2)
+tree.DTRAmes <- tree(SalePrice ~ ., DTRAmes, subset = train)
+summary(tree.DTRAmes)
+
+plot(tree.DTRAmes)
+text(tree.DTRAmes, pretty = 0)
+
+cv.DTRAmes <- cv.tree(tree.DTRAmes)
+cv.DTRAmes
+plot(cv.DTRAmes$size, cv.DTRAmes$dev, type = 'b')
+
+prune.DTRAmes <- prune.tree(tree.DTRAmes, best = 14)
+plot(prune.DTRAmes)
+text(prune.DTRAmes, pretty = 0)
+
+yhat <- predict(prune.DTRAmes, newdata = DTRAmes[-train, ])
+DTRAmes.test <- DTRAmes[-train, 'SalePrice']
+plot(yhat, DTRAmes.test)
+abline(0, 1)
+mean((yhat - DTRAmes.test)^2)
+DTR.RMSE <- sqrt(mean((yhat - DTRAmes.test)^2))
+DTR.RMSE
+
+set.seed(805)
+bag.DTRAmes <- randomForest(SalePrice ~ ., data = DTRAmes, subset = train, 
+                            mtry = 18, importance = TRUE)
+bag.DTRAmes
+
+yhat.bag <- predict(bag.DTRAmes, newdata = DTRAmes[-train, ])
+plot(yhat.bag, DTRAmes.test)
+abline(0, 1)
+mean((yhat.bag - DTRAmes.test)^2)
+bag.RMSE <- sqrt(mean((yhat.bag - DTRAmes.test)^2))
+bag.RMSE
+
+set.seed(805)
+rf.DTRAmes <- randomForest(SalePrice ~ ., data = DTRAmes, subset = train, 
+                           mtry = 6, importance = TRUE)
+rf.DTRAmes
+yhat.rf <- predict(rf.DTRAmes, newdata = DTRAmes[-train, ])
+plot(yhat.rf, DTRAmes.test)
+abline(0, 1)
+mean((yhat.rf - DTRAmes.test)^2)
+RF.RMSE <- sqrt(mean((yhat.bag - DTRAmes.test)^2))
+RF.RMSE
+
+importance(rf.DTRAmes)
+varImpPlot(rf.DTRAmes)
+varImpPlot(bag.DTRAmes)
+
+set.seed(805)
+boost.DTRAmes <- gbm(SalePrice ~ ., DTRAmes[train, ], distribution = 'gaussian',
+                     n.trees = 5000, interaction.depth = 4, shrinkage = 0.2, verbose = FALSE)
+summary(boost.DTRAmes)
+
+par(mfrow = c(2, 2))
+plot(boost.DTRAmes, i = 'GrLivArea')
+plot(boost.DTRAmes, i = 'TotalBsmtSF')
+plot(boost.DTRAmes, i = 'YearBuilt')
+plot(boost.DTRAmes, i = 'GarageArea')
+plot(boost.DTRAmes, i = 'LotArea')
+plot(boost.DTRAmes, i = 'KitchenQual_Ex')
+plot(boost.DTRAmes, i = 'Neighborhood_StoneBr')
+plot(boost.DTRAmes, i = 'SaleType_New')
+plot(boost.DTRAmes, i = 'Neighborhood_NridgHt')
+plot(boost.DTRAmes, i = 'Neighborhood_Crawfor')
+plot(boost.DTRAmes, i = 'Fireplaces_2')
+plot(boost.DTRAmes, i = 'Neighborhood_NoRidge')
+plot(boost.DTRAmes, i = 'HouseStyle_1Story')
+
+yhat.boost <- predict(boost.DTRAmes, newdata = DTRAmes[-train, ], n.trees = 5000)
+mean((yhat.boost - DTRAmes.test)^2)
+boost.RMSE <- sqrt(mean((yhat.boost - DTRAmes.test)^2))
+boost.RMSE
+
+svm.mod <- svm(SalePrice ~., data = AmesTrDumScaleDFShort)
+svm.pred <- predict(svm.mod, lm.test)
+svm.mod
+svm.pred
+
+mean((svm.pred - DTRAmes.test)^2)
+svm.RMSE <- sqrt(mean((svm.pred - DTRAmes.test)^2))
+svm.RMSE
+
